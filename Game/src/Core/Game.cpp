@@ -1,5 +1,6 @@
 #include "Core/Game.h"
 
+#include <memory>
 #include <optional>
 
 #include <SFML/Window/Event.hpp>
@@ -7,12 +8,16 @@
 #include "ImGui-SFML/imgui-SFML.h"
 
 #include "Core/Config.h"
+#include "Scenes/MenuScene.h"
 
 Game::Game()
 	: renderWindow(sf::VideoMode({ cfg::WindowWidth, cfg::WindowHeight }), cfg::WindowTitle)
 {
 	renderWindow.setFramerateLimit(60);
 	imguiReady = ImGui::SFML::Init(renderWindow);
+
+	sceneManager.push(std::make_unique<MenuScene>(*this));
+	sceneManager.applyPending();
 }
 
 Game::~Game()
