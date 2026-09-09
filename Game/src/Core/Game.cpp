@@ -1,13 +1,11 @@
 #include "ImGui/imgui.h"
 #include "ImGui-SFML/imgui-SFML.h"
 
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
 
-#include "Player.h"
+#include "Gameplay/Player.h"
 
 int main()
 {

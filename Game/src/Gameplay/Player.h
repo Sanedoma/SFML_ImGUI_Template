@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-#include "../Core/Entity.h"
+#include "Core/Entity.h"
 
 class Player : public Entity
 {
@@ -32,4 +32,5 @@ public:
 		// TODO
 	}
 
+	sf::Vector2f getPosition() const { return position; }
 };
