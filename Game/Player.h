@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 
+#include "Bullet.h"
+
 class Player
 {
 protected:
@@ -11,11 +13,12 @@ protected:
     bool hasSprite = false;
 
     sf::Vector2f position = { 375.f, 500.f };
-    float speed = 300.f;                
+    float speed = 300.f;   
+	float shootCooldown = 0.f; //temps restant avant le prochaint tire
+	float fireRate = 0.5f; // temps entre deux tirs (en secondes)
 
 public:
-    Player()
-    {
+    Player(){
         // Rectangle de secours (toujours prêt)
         fallback.setSize({ 50.f, 50.f });
         fallback.setFillColor(sf::Color::Green);
@@ -30,8 +33,7 @@ public:
         }
     }
 
-    void Update(float deltaTime)
-    {
+    void Update(float deltaTime){
         sf::Vector2f movement({ 0.f, 0.f });
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))  movement.x -= 1.f;
@@ -50,16 +52,37 @@ public:
         if (position.x > 800.f - sizeX)  position.x = 800.f - sizeX;
         if (position.y > 600.f - sizeY)  position.y = 600.f - sizeY;
 
+		//Décompte du cooldown de tir
+        if(shootCooldown > 0.f)
+			shootCooldown -= deltaTime;
+
         // On répercute la position sur l'objet qu'on affiche
-        if (hasSprite) sprite->setPosition(position);
-        else           fallback.setPosition(position);
+        if (hasSprite) 
+            sprite->setPosition(position);
+        else           
+            fallback.setPosition(position);
     }
 
-    void Render(sf::RenderWindow& window)
-    {
+    void Render(sf::RenderWindow& window){
         if (hasSprite) window.draw(sprite.value());
         else           window.draw(fallback);
     }
 
     sf::Vector2f getPosition() const { return position; }
+
+    std::optional<Bullet> TryShoot() {
+		bool wantsToShoot = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
+
+		if (wantsToShoot && shootCooldown <= 0.f) {
+            shootCooldown = fireRate;
+
+            sf::Vector2f bulletPos = {
+                position.x + 25.f - 3.f,
+                position.y - 2.f
+            };
+			return Bullet(bulletPos);
+		}
+
+		return std::nullopt;
+    }
 };
