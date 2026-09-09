@@ -78,10 +78,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Core\AssetManager.cpp" />
+    <ClCompile Include="src\Core\Game.cpp" />
     <ClCompile Include="src\Core\SceneManager.cpp" />
     <ClCompile Include="src\Core\Entity.cpp" />
-    <ClCompile Include="src\Core\Game.cpp" />
     <ClCompile Include="src\Gameplay\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +93,7 @@
   <ItemGroup>
     <ClInclude Include="src\Core\AssetManager.h" />
     <ClInclude Include="src\Core\Config.h" />
+    <ClInclude Include="src\Core\Game.h" />
     <ClInclude Include="src\Core\Scene.h" />
     <ClInclude Include="src\Core\SceneManager.h" />
     <ClInclude Include="src\Core\Entity.h" />
