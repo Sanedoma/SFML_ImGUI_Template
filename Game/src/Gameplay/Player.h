@@ -4,12 +4,11 @@
 
 #include "Bullet.h"
 
-#include "Core/Entity.h"
+#include "../Core/Entity.h"
 
 class Player : public Entity
 {
 protected:
-<<<<<<< HEAD:Game/Player.h
     sf::Texture texture;
     std::optional<sf::Sprite> sprite;   // sprite si une image est chargée
     sf::RectangleShape fallback;        // rectangle vert sinon
@@ -19,6 +18,10 @@ protected:
     float speed = 300.f;   
 	float shootCooldown = 0.f; //temps restant avant le prochaint tire
 	float fireRate = 0.5f; // temps entre deux tirs (en secondes)
+    int health = 3; 
+	bool invulnerable = false; 
+    float invulnerabilityTime = 0.f;
+	const float invulnerabilityDuration = 4.f;
 
 public:
     Player(){
@@ -36,7 +39,7 @@ public:
         }
     }
 
-    void Update(float deltaTime){
+    void Update(float deltaTime) override{
         sf::Vector2f movement({ 0.f, 0.f });
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))  movement.x -= 1.f;
@@ -58,6 +61,13 @@ public:
 		//Décompte du cooldown de tir
         if(shootCooldown > 0.f)
 			shootCooldown -= deltaTime;
+		//Décompte du temps d'invulnérabilité 
+        if (invulnerable) {
+			invulnerabilityTime -= deltaTime;
+			if (invulnerabilityTime <= 0.f) {
+				invulnerable = false;
+			}
+        }
 
         // On répercute la position sur l'objet qu'on affiche
         if (hasSprite) 
@@ -66,7 +76,7 @@ public:
             fallback.setPosition(position);
     }
 
-    void Render(sf::RenderWindow& window){
+    void Render(sf::RenderWindow& window) override{
         if (hasSprite) window.draw(sprite.value());
         else           window.draw(fallback);
     }
@@ -88,34 +98,26 @@ public:
 
 		return std::nullopt;
     }
+
+	void OnCollision(Entity* other) override {
+		// Ici, on pourrait gérer la collision avec d'autres entités
+		// Par exemple, si le joueur touche un ennemi ou un projectile ennemi
+	}
+
+	sf::FloatRect getBounds() const {
+		if (hasSprite) return sprite->getGlobalBounds();
+		return fallback.getGlobalBounds();
+	}
+
+	void TakeDammage(int amount) {
+        if (invulnerable) return;
+        health -= amount;
+        invulnerable = true;
+		invulnerabilityTime = invulnerabilityDuration;
+        if (health < 0) health = 0;
+	}
+
+    int getHealth() const { return health; }
+	bool isAlive() const { return health > 0; }
+
 };
-=======
-	sf::Texture texture;
-	sf::Vector2f position = { 375.f, 500.f };
-	float speed = 50.f;
-
-public:
-	Player() {
-		if (!texture.loadFromFile("assets/player.png"))
-			return;
-
-		sprite.emplace(texture);
-		sprite->setPosition(position);
-	}
-
-	void Update(float deltaTime) override {
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
-			position.y -= speed * deltaTime;
-
-		if (sprite.has_value())
-			sprite->setPosition(position);
-	}
-
-	void OnCollision(Entity* other) override
-	{
-		// TODO
-	}
-
-	sf::Vector2f getPosition() const { return position; }
-};
->>>>>>> develop:Game/src/Gameplay/Player.h

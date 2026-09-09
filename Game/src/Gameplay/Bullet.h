@@ -1,7 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../Core/Entity.h"
 
-class Bullet
+class Bullet : public Entity
 {
 protected:
 	sf::RectangleShape shape;
@@ -17,13 +18,21 @@ public:
 
 	}
 
-	void Update(float deltaTime) {
+	void Update(float deltaTime) override{
 		position.y -= speed * deltaTime;
 		shape.setPosition(position);
 	}
 
-	void Render(sf::RenderWindow& window) {
+	void Render(sf::RenderWindow& window) override {
 		window.draw(shape);
+	}
+
+	void OnCollision(Entity* other) override {
+		// Todo
+	}
+
+	sf::FloatRect getBounds() const {
+		return shape.getGlobalBounds();
 	}
 
 	bool isOffScreen() const {
@@ -31,5 +40,6 @@ public:
 	}
 
 	sf::Vector2f getPosition() const { return position; }
+	void kill() { alive = false; }
 };
 

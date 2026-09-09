@@ -4,12 +4,10 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
-<<<<<<< HEAD:Game/Game.cpp
 #include <vector>
-=======
->>>>>>> develop:Game/src/Core/Game.cpp
 
-#include "Gameplay/Player.h"
+#include "../Gameplay/Player.h"
+#include "../Gameplay/Enemy.h"
 
 int main()
 {
@@ -19,8 +17,16 @@ int main()
 
     Player player;
     std::vector<Bullet> bullets;
+	std::vector<Enemy> enemies;
+
+    // Quelques ennemis de test, répartis en haut de l'écran
+    enemies.push_back(Enemy({ 100.f, 0.f }));
+    enemies.push_back(Enemy({ 300.f, -100.f }));
+    enemies.push_back(Enemy({ 500.f, -200.f }));
+    enemies.push_back(Enemy({ 700.f, -50.f }));
 
     sf::Clock deltaClock;
+	int score = 0;
 
     while (window.isOpen())
     {
@@ -41,12 +47,41 @@ int main()
         if (auto newBullet = player.TryShoot())
             bullets.push_back(*newBullet);
 
-<<<<<<< HEAD:Game/Game.cpp
         for(Bullet& bullet : bullets)
 			bullet.Update(dt.asSeconds());
 
-		//On supprime les balles qui sont sorties de l'écran
-		std::erase_if(bullets, [](const Bullet& b) { return b.isOffScreen(); });
+        for (Enemy& enemy : enemies)
+            enemy.Update(dt.asSeconds());
+
+        // --- Collisions balle -> ennemi ---
+        for (Bullet& bullet : bullets) {
+            for (Enemy& enemy : enemies) {
+                if (!bullet.isAlive() || !enemy.isAlive())
+                    continue;
+
+                if (bullet.getBounds().findIntersection(enemy.getBounds())) {
+                    bullet.kill();
+                    enemy.OnCollision(&bullet);
+                    score += 100;
+                }
+            }
+        }
+
+		//--- Collisions joueur -> ennemi ---
+		for (Enemy& enemy : enemies) {
+			if (!enemy.isAlive())
+				continue;
+			if (player.getBounds().findIntersection(enemy.getBounds())) {
+                player.TakeDammage(1);
+				enemy.OnCollision(&player);
+
+			}
+		}
+
+
+		//On supprime les balles et les enemies qui sont sorties de l'écran
+		std::erase_if(bullets, [](const Bullet& b) { return b.isOffScreen() || !b.isAlive(); });
+        std::erase_if(enemies, [](const Enemy& e) { return e.isOffScreen() || !e.isAlive(); });
 
         ImGui::Begin("Debug");
         ImGui::Text("Player Position: (%.0f, %.0f)", player.getPosition().x, player.getPosition().y);
@@ -55,6 +90,9 @@ int main()
 			"space bar as been pressed %s",
 			sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) ? "true" : "false"
         );
+        ImGui::Text("Enemies: %d", (int)enemies.size());
+        ImGui::Text("Score: %d", score);
+        ImGui::Text("Player HP: %d", player.getHealth());
         ImGui::End();
 
 
@@ -63,13 +101,11 @@ int main()
         player.Render(window);
         for(Bullet& bullet : bullets)
 			bullet.Render(window);
+        for (Enemy& enemy : enemies)
+            enemy.Render(window);
         ImGui::SFML::Render(window);      
         window.display();                 
     }
 
     ImGui::SFML::Shutdown();
 }
-=======
-	ImGui::SFML::Shutdown();
-}
->>>>>>> develop:Game/src/Core/Game.cpp

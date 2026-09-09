@@ -78,15 +78,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <ClCompile Include="Bullet.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Player.cpp" />
-=======
+    <ClCompile Include="src\Gameplay\Enemy.cpp" />
     <ClCompile Include="src\Core\Entity.cpp" />
     <ClCompile Include="src\Core\Game.cpp" />
     <ClCompile Include="src\Gameplay\Player.cpp" />
->>>>>>> develop
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
@@ -94,13 +89,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <ClInclude Include="Bullet.h" />
-    <ClInclude Include="Player.h" />
-=======
+    <ClInclude Include="src\Gameplay\Enemy.h" />
     <ClInclude Include="src\Core\Entity.h" />
     <ClInclude Include="src\Gameplay\Player.h" />
->>>>>>> develop
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
