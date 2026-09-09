@@ -85,6 +85,8 @@
     <ClCompile Include="src\Core\Entity.cpp" />
     <ClCompile Include="src\Scenes\MenuScene.cpp" />
     <ClCompile Include="src\Scenes\PlayScene.cpp" />
+    <ClCompile Include="src\Scenes\PauseScene.cpp" />
+    <ClCompile Include="src\Scenes\SettingsScene.cpp" />
     <ClCompile Include="src\Gameplay\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +103,8 @@
     <ClInclude Include="src\Core\Entity.h" />
     <ClInclude Include="src\Scenes\MenuScene.h" />
     <ClInclude Include="src\Scenes\PlayScene.h" />
+    <ClInclude Include="src\Scenes\PauseScene.h" />
+    <ClInclude Include="src\Scenes\SettingsScene.h" />
     <ClInclude Include="src\Gameplay\Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

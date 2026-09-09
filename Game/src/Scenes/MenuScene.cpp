@@ -6,6 +6,7 @@
 
 #include "Core/Game.h"
 #include "Scenes/PlayScene.h"
+#include "Scenes/SettingsScene.h"
 
 void MenuScene::Render(sf::RenderWindow& window)
 {
@@ -19,6 +20,9 @@ void MenuScene::Render(sf::RenderWindow& window)
 
 	if (ImGui::Button("Jouer", { 160.f, 0.f }))
 		game.scenes().replace(std::make_unique<PlayScene>(game));
+
+	if (ImGui::Button("Options", { 160.f, 0.f }))
+		game.scenes().push(std::make_unique<SettingsScene>(game));
 
 	if (ImGui::Button("Quitter", { 160.f, 0.f }))
 		game.window().close();

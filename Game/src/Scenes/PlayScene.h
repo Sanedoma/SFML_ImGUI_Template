@@ -12,6 +12,7 @@ class PlayScene : public Scene
 public:
 	explicit PlayScene(Game& game);
 
+	void handleEvent(const sf::Event& event) override;
 	void Update(float deltaTime) override;
 	void Render(sf::RenderWindow& window) override;
 

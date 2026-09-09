@@ -1,9 +1,13 @@
 #include "Scenes/PlayScene.h"
 
+#include <SFML/Window/Keyboard.hpp>
+
 #include "ImGui/imgui.h"
 
 #include "Core/Entity.h"
+#include "Core/Game.h"
 #include "Gameplay/Player.h"
+#include "Scenes/PauseScene.h"
 
 PlayScene::PlayScene(Game& game)
 	: Scene(game)
@@ -11,6 +15,13 @@ PlayScene::PlayScene(Game& game)
 	auto newPlayer = std::make_unique<Player>();
 	player = newPlayer.get();
 	entities.push_back(std::move(newPlayer));
+}
+
+void PlayScene::handleEvent(const sf::Event& event)
+{
+	const auto* key = event.getIf<sf::Event::KeyPressed>();
+	if (key && key->code == sf::Keyboard::Key::Escape)
+		game.scenes().push(std::make_unique<PauseScene>(game));
 }
 
 void PlayScene::Update(float deltaTime)
