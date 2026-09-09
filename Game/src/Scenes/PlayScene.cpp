@@ -7,7 +7,9 @@
 #include "Core/Entity.h"
 #include "Core/Game.h"
 #include "Gameplay/Player.h"
+#include "Scenes/GameOverScene.h"
 #include "Scenes/PauseScene.h"
+#include "Scenes/VictoryScene.h"
 
 PlayScene::PlayScene(Game& game)
 	: Scene(game)
@@ -50,6 +52,10 @@ void PlayScene::Render(sf::RenderWindow& window)
 	if (player)
 		ImGui::Text("Player: (%.0f, %.0f)", player->getPosition().x, player->getPosition().y);
 	ImGui::Text("Score: %d", score);
+	if (ImGui::Button("Tuer le joueur"))
+		game.scenes().replace(std::make_unique<GameOverScene>(game, score));
+	if (ImGui::Button("Gagner"))
+		game.scenes().replace(std::make_unique<VictoryScene>(game, score));
 	ImGui::End();
 }
 
