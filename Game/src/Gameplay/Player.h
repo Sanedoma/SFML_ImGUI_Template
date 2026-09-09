@@ -1,33 +1,35 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Player
+#include "../Core/Entity.h"
+
+class Player : public Entity
 {
+protected:
 	sf::Texture texture;
-	std::optional<sf::Sprite> sprite;
 	sf::Vector2f position = { 375.f, 500.f };
 	float speed = 50.f;
 
+public:
 	Player() {
-		bool result = texture.loadFromFile("assets/player.png");
-		if (!result) {
+		if (!texture.loadFromFile("assets/player.png"))
 			return;
-		}else {
-			sprite.emplace(sf::Sprite(texture));
-			sprite->setPosition(position);
-		}
 
+		sprite.emplace(texture);
+		sprite->setPosition(position);
 	}
 
-	void Update(float deltaTime) {
+	void Update(float deltaTime) override {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
 			position.y -= speed * deltaTime;
 
-		sprite->setPosition(position);
+		if (sprite.has_value())
+			sprite->setPosition(position);
 	}
-	
-	void Render(sf::RenderWindow& window) {
-		window.draw(sprite.value());
-	}
-};
 
+	void OnCollision(Entity* other) override
+	{
+		// TODO
+	}
+
+};
