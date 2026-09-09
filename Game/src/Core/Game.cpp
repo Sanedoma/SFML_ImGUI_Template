@@ -4,9 +4,12 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
+<<<<<<< HEAD:Game/Game.cpp
 #include <vector>
+=======
+>>>>>>> develop:Game/src/Core/Game.cpp
 
-#include "Player.h"
+#include "Gameplay/Player.h"
 
 int main()
 {
@@ -38,6 +41,7 @@ int main()
         if (auto newBullet = player.TryShoot())
             bullets.push_back(*newBullet);
 
+<<<<<<< HEAD:Game/Game.cpp
         for(Bullet& bullet : bullets)
 			bullet.Update(dt.asSeconds());
 
@@ -65,3 +69,7 @@ int main()
 
     ImGui::SFML::Shutdown();
 }
+=======
+	ImGui::SFML::Shutdown();
+}
+>>>>>>> develop:Game/src/Core/Game.cpp
