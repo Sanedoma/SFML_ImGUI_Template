@@ -1,50 +1,62 @@
-#include "ImGui/imgui.h"
-#include "ImGui-SFML/imgui-SFML.h"
+#include "Core/Game.h"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Clock.hpp>
+#include <memory>
+#include <optional>
+
 #include <SFML/Window/Event.hpp>
 
-#include "Gameplay/Player.h"
+#include "ImGui-SFML/imgui-SFML.h"
 
-int main()
+#include "Core/Config.h"
+#include "Scenes/MenuScene.h"
+
+Game::Game()
+	: renderWindow(sf::VideoMode({ cfg::WindowWidth, cfg::WindowHeight }), cfg::WindowTitle)
 {
-	sf::RenderWindow window(sf::VideoMode({ 800, 600 }), "Shoot'em Up");
-	window.setFramerateLimit(60);
-	ImGui::SFML::Init(window);
+	renderWindow.setFramerateLimit(60);
+	imguiReady = ImGui::SFML::Init(renderWindow);
 
-	// --- Le joueur ---
-	Player player;
+	sceneManager.push(std::make_unique<MenuScene>(*this));
+	sceneManager.applyPending();
+}
 
-	sf::Clock deltaClock;
+Game::~Game()
+{
+	if (imguiReady)
+		ImGui::SFML::Shutdown();
+}
 
-	//Execution de la boucle principale (par frame)
-	while (window.isOpen()){
-		// Les entrées utilisateur
-		while (const auto event = window.pollEvent()) {
-			ImGui::SFML::ProcessEvent(window, *event);
-			if(event->is<sf::Event::Closed>()){
-				window.close();
-			}
-		}
+void Game::Run()
+{
+	while (renderWindow.isOpen())
+	{
+		processEvents();
 
-		// Phase d'update
-		const sf::Time dt = deltaClock.restart();
-		ImGui::SFML::Update(window, dt);
-		// Logique de jeu (déplacement du joueur)
-		player.Update(dt.asSeconds());
-		player.Render(window);
+		const sf::Time dt = clock.restart();
+		if (imguiReady)
+			ImGui::SFML::Update(renderWindow, dt);
+		sceneManager.Update(dt.asSeconds());
 
-		// Panneau de débug ImGui
-		ImGui::Begin("Debug");
-		ImGui::Text("Player Position: (%.0f, %.0f)", player.getPosition().x, player.getPosition().y);
-		ImGui::End();
+		renderWindow.clear();
+		sceneManager.Render(renderWindow);
+		if (imguiReady)
+			ImGui::SFML::Render(renderWindow);
+		renderWindow.display();
 
-		// Phase de rendu
-		window.clear(sf::Color::Black);
-		ImGui::SFML::Render(window);
-		window.display();
+		sceneManager.applyPending();
 	}
+}
 
-	ImGui::SFML::Shutdown();
+void Game::processEvents()
+{
+	while (const std::optional<sf::Event> event = renderWindow.pollEvent())
+	{
+		if (imguiReady)
+			ImGui::SFML::ProcessEvent(renderWindow, *event);
+
+		if (event->is<sf::Event::Closed>())
+			renderWindow.close();
+		else
+			sceneManager.handleEvent(*event);
+	}
 }
