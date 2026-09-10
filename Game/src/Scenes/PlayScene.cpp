@@ -44,6 +44,8 @@ void PlayScene::handleEvent(const sf::Event& event)
 
 void PlayScene::Update(float deltaTime)
 {
+	background.Update(deltaTime);
+
 	for (auto& entity : entities)
 		entity->Update(deltaTime);
 
@@ -67,6 +69,9 @@ void PlayScene::Update(float deltaTime)
 
 	handleEnemyDeaths();
 
+	if (player)
+		hud.Update(*player, score);
+
 	std::erase_if(entities, [this](const std::unique_ptr<Entity>& entity)
 		{
 			if (entity->isAlive())
@@ -81,8 +86,12 @@ void PlayScene::Update(float deltaTime)
 
 void PlayScene::Render(sf::RenderWindow& window)
 {
+	background.Render(window);
+
 	for (auto& entity : entities)
 		entity->Render(window);
+
+	hud.Render(window);
 
 	ImGui::Begin("Debug");
 	if (player) {
