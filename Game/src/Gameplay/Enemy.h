@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../Core/Entity.h"
+#include "Core/Entity.h"
+#include "Core/Config.h"
 
 class Enemy : public Entity
 {
@@ -8,6 +9,7 @@ protected:
 	sf::RectangleShape fallback;
 	sf::Vector2f position;
 	float speed = 100.f;
+	bool killedByBullet = false;
 
 public:
 	Enemy(sf::Vector2f startPosition){
@@ -20,6 +22,10 @@ public:
 	void Update(float deltaTime)override {
 		position.y += speed * deltaTime;
 		fallback.setPosition(position);
+
+		if (isOffScreen()) {
+			alive = false; // hors écran → disparaît
+		}
 	}
 
 	void Render(sf::RenderWindow& window) override {
@@ -30,6 +36,7 @@ public:
 		if (other->getType() == EntityType::BULLET ||
 			other->getType() == EntityType::PLAYER) {
 			alive = false;
+			killedByBullet = (other->getType() == EntityType::BULLET);
 		}
 	}
 
@@ -45,7 +52,9 @@ public:
 	sf::Vector2f getPosition() const { return position; }
 
 	bool isOffScreen() const {
-		return position.y > 600.f;
+		sf::FloatRect bounds = fallback.getGlobalBounds();
+		return bounds.position.y + bounds.size.y > static_cast<float>(cfg::WindowHeight);
 	}
+	bool wasKilledByBullet() const { return killedByBullet; }
 };
 
