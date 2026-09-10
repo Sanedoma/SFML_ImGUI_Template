@@ -26,6 +26,7 @@ public:
 
     sf::Vector2f getPosition() const { return position; }
     int getHealth() const { return health; }
+    int getMaxHealth() const { return baseMaxHealth; }
     bool getHasShield() const { return hasShield; }
     float getSpeed() const { return speed; }
     int getCurrentDamage() const { return currentDamage; }
@@ -42,7 +43,8 @@ protected:
     float fireRate = 0.5f; // temps entre deux tirs (en secondes)
 
     // Santé
-    int health = 3;
+    static constexpr int baseMaxHealth = 3;
+    int health = baseMaxHealth;
     bool invulnerable = false;
     float invulnerabilityTime = 0.f;
     const float invulnerabilityDuration = 1.f;
