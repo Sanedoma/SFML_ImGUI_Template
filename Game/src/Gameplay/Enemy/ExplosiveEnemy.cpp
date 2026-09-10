@@ -1,4 +1,4 @@
-#include "Gameplay/ExplosiveEnemy.h"
+#include "Gameplay/Enemy/ExplosiveEnemy.h"
 
 #include <cmath>
 

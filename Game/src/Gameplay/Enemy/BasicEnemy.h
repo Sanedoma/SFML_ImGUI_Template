@@ -1,5 +1,5 @@
 #pragma once
-#include "Gameplay/Enemy.h"
+#include "Gameplay/Enemy/Enemy.h"
 
 // Descend tout droit vers le bas.
 class BasicEnemy : public Enemy

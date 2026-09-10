@@ -1,4 +1,4 @@
-#include "Gameplay/BasicEnemy.h"
+#include "Gameplay/Enemy/BasicEnemy.h"
 
 BasicEnemy::BasicEnemy(sf::Vector2f position)
 	: Enemy(position, 150.f, 20)

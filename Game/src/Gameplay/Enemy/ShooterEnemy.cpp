@@ -1,4 +1,4 @@
-#include "Gameplay/ShooterEnemy.h"
+#include "Gameplay/Enemy/ShooterEnemy.h"
 
 ShooterEnemy::ShooterEnemy(sf::Vector2f position)
 	: Enemy(position, 0.f, 3)

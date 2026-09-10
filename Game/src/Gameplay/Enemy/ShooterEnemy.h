@@ -1,5 +1,5 @@
 #pragma once
-#include "Gameplay/Enemy.h"
+#include "Gameplay/Enemy/Enemy.h"
 
 // Stationnaire, tire vers le bas a intervalle regulier.
 class ShooterEnemy : public Enemy

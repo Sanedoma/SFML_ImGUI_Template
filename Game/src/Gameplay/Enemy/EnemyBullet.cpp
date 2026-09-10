@@ -1,4 +1,4 @@
-#include "Gameplay/EnemyBullet.h"
+#include "Gameplay/Enemy/EnemyBullet.h"
 
 #include "Core/Config.h"
 
