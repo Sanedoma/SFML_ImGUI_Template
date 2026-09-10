@@ -5,6 +5,7 @@
 
 #include "Core/Scene.h"
 #include "World/Background.h"
+#include "World/Hud.h"
 
 class Entity;
 class Player;
@@ -25,6 +26,7 @@ private:
 	void checkCollisions();
 
 	Background background;
+	Hud hud;
 	std::vector<std::unique_ptr<Entity>> entities;
 	Player* player = nullptr;
 	int score = 0;

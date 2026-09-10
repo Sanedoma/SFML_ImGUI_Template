@@ -69,6 +69,9 @@ void PlayScene::Update(float deltaTime)
 
 	handleEnemyDeaths();
 
+	if (player)
+		hud.Update(*player, score);
+
 	std::erase_if(entities, [this](const std::unique_ptr<Entity>& entity)
 		{
 			if (entity->isAlive())
@@ -87,6 +90,8 @@ void PlayScene::Render(sf::RenderWindow& window)
 
 	for (auto& entity : entities)
 		entity->Render(window);
+
+	hud.Render(window);
 
 	ImGui::Begin("Debug");
 	if (player) {
