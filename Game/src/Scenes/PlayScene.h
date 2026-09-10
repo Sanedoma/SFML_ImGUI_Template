@@ -4,6 +4,7 @@
 #include <random>
 
 #include "Core/Scene.h"
+#include "World/Background.h"
 
 class Entity;
 class Player;
@@ -23,6 +24,7 @@ private:
 	void handleEnemyDeaths();
 	void checkCollisions();
 
+	Background background;
 	std::vector<std::unique_ptr<Entity>> entities;
 	Player* player = nullptr;
 	int score = 0;
