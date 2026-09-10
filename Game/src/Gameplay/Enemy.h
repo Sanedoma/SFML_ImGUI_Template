@@ -27,13 +27,19 @@ public:
 	}
 
 	void OnCollision(Entity* other) override {
-		
-		alive = false;
-
+		if (other->getType() == EntityType::BULLET ||
+			other->getType() == EntityType::PLAYER) {
+			alive = false;
+		}
 	}
 
-	sf::FloatRect getBounds() const{
+	sf::FloatRect getBounds() const override{
 		return fallback.getGlobalBounds();
+	}
+
+	EntityType getType() const override
+	{
+		return EntityType::ENEMY;
 	}
 
 	sf::Vector2f getPosition() const { return position; }

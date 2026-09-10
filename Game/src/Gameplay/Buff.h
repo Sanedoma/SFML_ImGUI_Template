@@ -53,12 +53,20 @@ public:
 
 	void OnCollision(Entity* other) override
 	{
-		alive = false;   // ramassé → disparaît
+		if(other->getType() == EntityType::PLAYER) {
+			alive = false;   // ramassé → disparaît
+		}
 	}
 
-	BuffType getType() const { return type; }
+	BuffType getBuffType() const { return type; }
+	
+	EntityType getType() const override
+	{
+		return EntityType::BUFF;
+	}
 
-	sf::FloatRect getBounds() const { return shape.getGlobalBounds(); }
+	sf::FloatRect getBounds() const override { return shape.getGlobalBounds(); }
+
 
 	bool isOffScreen() const { return position.y > 600.f; }
 

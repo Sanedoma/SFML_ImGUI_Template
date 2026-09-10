@@ -2,6 +2,15 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 
+enum class EntityType
+{
+	PLAYER,
+	ENEMY,
+	BULLET,
+	BUFF,
+	OBSTACLE
+};
+
 class Entity
 {
 protected:
@@ -20,14 +29,13 @@ public:
             window.draw(*sprite);
     }
 
-    sf::FloatRect getBounds() const
+    virtual sf::FloatRect getBounds() const
     {
         return sprite.has_value() ? sprite->getGlobalBounds() : sf::FloatRect();
     }
     
-    bool isAlive() const
-    {
-        return alive;
-    }
+	virtual EntityType getType() const = 0;
+
+    bool isAlive() const { return alive; }
     
 };

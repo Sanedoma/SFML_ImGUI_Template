@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <optional>
+#include <memory>
 
 #include "Bullet.h"
 #include "Buff.h"
@@ -118,7 +118,7 @@ public:
 
     sf::Vector2f getPosition() const { return position; }
 
-    std::optional<Bullet> TryShoot() {
+    std::unique_ptr<Bullet> TryShoot() {
 		bool wantsToShoot = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
 
 		if (wantsToShoot && shootCooldown <= 0.f) {
@@ -128,20 +128,30 @@ public:
                 position.x + 25.f - 3.f,
                 position.y - 2.f
             };
-			return Bullet(bulletPos);
+			return std::make_unique<Bullet>(bulletPos);
 		}
 
-		return std::nullopt;
+		return nullptr;
     }
 
 	void OnCollision(Entity* other) override {
-		// Ici, on pourrait gérer la collision avec d'autres entités
-		// Par exemple, si le joueur touche un ennemi ou un projectile ennemi
+        if (other->getType() == EntityType::ENEMY) {
+			TakeDammage(1);
+        }
+        else if (other->getType() == EntityType::BUFF) {
+			Buff* buff = static_cast<Buff*>(other);
+			ApplyBuff(buff->getBuffType());
+        }
+
 	}
 
-	sf::FloatRect getBounds() const {
+	sf::FloatRect getBounds() const override{
 		if (hasSprite) return sprite->getGlobalBounds();
 		return fallback.getGlobalBounds();
+	}
+
+	EntityType getType() const override {
+		return EntityType::PLAYER;
 	}
 
 	void TakeDammage(int amount) {
@@ -157,7 +167,10 @@ public:
         health -= amount;
         invulnerable = true;
 		invulnerabilityTime = invulnerabilityDuration;
-        if (health < 0) health = 0;
+        if (health <= 0){
+            health = 0;
+            alive = false;
+        }
 	}
 
     void ApplyBuff(BuffType type){
@@ -182,7 +195,6 @@ public:
     }
 
     int getHealth() const { return health; }
-	bool isAlive() const { return health > 0; }
     bool getHasShield() const { return hasShield; }
     float getSpeed() const { return speed; }
     int getCurrentDamage() const { return currentDamage; }

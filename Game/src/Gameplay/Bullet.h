@@ -28,11 +28,19 @@ public:
 	}
 
 	void OnCollision(Entity* other) override {
-		// Todo
+		if (other->getType() == EntityType::ENEMY) {
+			alive = false; // disparaît à l'impact
+		}
 	}
 
-	sf::FloatRect getBounds() const {
+	sf::FloatRect getBounds() const override
+	{
 		return shape.getGlobalBounds();
+	}
+
+	EntityType getType() const override
+	{
+		return EntityType::BULLET;
 	}
 
 	bool isOffScreen() const {
