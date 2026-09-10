@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../Core/Entity.h"
+#include "Core/Entity.h"
+#include "Core/Config.h"
 
 enum class BuffType {
 	Speed,
@@ -45,6 +46,10 @@ public:
 		position.y += speed * deltaTime;
 		shape.setPosition(position);
 
+		if (isOffScreen()) {
+			alive = false; // hors écran → disparaît
+		}
+
 	}
 
 	void Render(sf::RenderWindow& window) override {
@@ -68,7 +73,11 @@ public:
 	sf::FloatRect getBounds() const override { return shape.getGlobalBounds(); }
 
 
-	bool isOffScreen() const { return position.y > 600.f; }
+
+	bool isOffScreen() const { 
+		sf::FloatRect bounds = shape.getGlobalBounds();
+		return bounds.position.y + bounds.size.y > static_cast<float>(cfg::WindowHeight);
+	}
 
 	sf::Vector2f getPosition() const { return position; }
 };

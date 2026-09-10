@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../Core/Entity.h"
+#include "Core/Entity.h"
+#include "Core/Config.h"
 
 class Bullet : public Entity
 {
@@ -21,6 +22,10 @@ public:
 	void Update(float deltaTime) override{
 		position.y -= speed * deltaTime;
 		shape.setPosition(position);
+
+		if (isOffScreen()) {
+			alive = false; // hors écran → disparaît
+		}
 	}
 
 	void Render(sf::RenderWindow& window) override {
@@ -43,9 +48,12 @@ public:
 		return EntityType::BULLET;
 	}
 
-	bool isOffScreen() const {
-		return position.y + 16.f < 0;
+	bool isOffScreen() const
+	{
+		sf::FloatRect bounds = shape.getGlobalBounds();
+		return bounds.position.y + bounds.size.y < 0.f;
 	}
+
 
 	sf::Vector2f getPosition() const { return position; }
 	void kill() { alive = false; }

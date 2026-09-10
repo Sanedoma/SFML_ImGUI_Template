@@ -5,7 +5,8 @@
 #include "Bullet.h"
 #include "Buff.h"
 
-#include "../Core/Entity.h"
+#include "Core/Entity.h"
+#include "Core/Config.h"
 
 class Player : public Entity
 {
@@ -14,6 +15,7 @@ protected:
     sf::RectangleShape fallback;        // rectangle vert sinon
     bool hasSprite = false;
     sf::Vector2f position = { 375.f, 500.f };
+    static constexpr float Size = 50.f;
 
 
     // Tir
@@ -24,7 +26,7 @@ protected:
     int health = 3; 
 	bool invulnerable = false; 
     float invulnerabilityTime = 0.f;
-	const float invulnerabilityDuration = 4.f;
+	const float invulnerabilityDuration = 1.f;
     bool hasShield = false;
 
     // Mouvement
@@ -44,7 +46,7 @@ protected:
 public:
     Player(){
         // Rectangle de secours (toujours prêt)
-        fallback.setSize({ 50.f, 50.f });
+        fallback.setSize({ Size, Size });
         fallback.setFillColor(sf::Color::Green);
         fallback.setPosition(position);
 
@@ -68,13 +70,15 @@ public:
         position += movement * speed * deltaTime;
 
 		// On empêche le joueur de sortir de l'écran
+        const float width = static_cast<float>(cfg::WindowWidth);
+        const float height = static_cast<float>(cfg::WindowHeight);
         const float sizeX = 50.f;
-		const float sizeY = 50.f;
+        const float sizeY = 50.f;
 
-        if (position.x < 0.f)            position.x = 0.f;
-        if (position.y < 0.f)            position.y = 0.f;
-        if (position.x > 800.f - sizeX)  position.x = 800.f - sizeX;
-        if (position.y > 600.f - sizeY)  position.y = 600.f - sizeY;
+        if (position.x < 0.f)              position.x = 0.f;
+        if (position.y < 0.f)              position.y = 0.f;
+        if (position.x > width - sizeX)    position.x = width - sizeX;
+        if (position.y > height - sizeY)   position.y = height - sizeY;
 
 		//Décompte du cooldown de tir
         if(shootCooldown > 0.f)
@@ -125,7 +129,7 @@ public:
             shootCooldown = fireRate;
 
             sf::Vector2f bulletPos = {
-                position.x + 25.f - 3.f,
+                position.x + Size / 2.f - 3.f,
                 position.y - 2.f
             };
 			return std::make_unique<Bullet>(bulletPos);
