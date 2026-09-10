@@ -7,6 +7,7 @@ enum class EntityType
 	PLAYER,
 	ENEMY,
 	BULLET,
+	ENEMY_BULLET,
 	BUFF,
 	OBSTACLE
 };

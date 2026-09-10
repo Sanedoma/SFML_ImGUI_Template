@@ -139,7 +139,8 @@ public:
     }
 
 	void OnCollision(Entity* other) override {
-        if (other->getType() == EntityType::ENEMY) {
+        if (other->getType() == EntityType::ENEMY ||
+            other->getType() == EntityType::ENEMY_BULLET) {
 			TakeDammage(1);
         }
         else if (other->getType() == EntityType::BUFF) {
