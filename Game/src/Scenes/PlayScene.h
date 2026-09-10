@@ -20,6 +20,7 @@ public:
 private:
 	void resolveExplosions();
 	void spawnEnemyBullets();
+	void handleEnemyDeaths();
 	void checkCollisions();
 
 	std::vector<std::unique_ptr<Entity>> entities;
