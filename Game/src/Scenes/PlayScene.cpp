@@ -9,12 +9,12 @@
 #include "Core/Entity.h"
 #include "Core/Game.h"
 #include "Gameplay/Player.h"
-#include "Gameplay/Enemy.h"
-#include "Gameplay/BasicEnemy.h"
-#include "Gameplay/ShooterEnemy.h"
-#include "Gameplay/ExplosiveEnemy.h"
+#include "Gameplay/Enemy/Enemy.h"
+#include "Gameplay/Enemy/BasicEnemy.h"
+#include "Gameplay/Enemy/ShooterEnemy.h"
+#include "Gameplay/Enemy/ExplosiveEnemy.h"
 #include "Gameplay/Bullet.h"
-#include "Gameplay/EnemyBullet.h"
+#include "Gameplay/Enemy/EnemyBullet.h"
 #include "Gameplay/Buff.h"
 #include "Scenes/GameOverScene.h"
 #include "Scenes/PauseScene.h"
@@ -65,22 +65,7 @@ void PlayScene::Update(float deltaTime)
 
 	checkCollisions();
 
-	for (auto& entity : entities)
-	{
-		if (entity->getType() == EntityType::ENEMY && !entity->isAlive())
-		{
-			Enemy* enemy = static_cast<Enemy*>(entity.get());
-			if(enemy->wasKilledByBullet())
-				score += 100;
-
-			if (dropChanceDist(rng) == 0)
-			{
-				int r = buffTypeDist(rng);
-				BuffType type = static_cast<BuffType>(r);
-				entities.push_back(std::make_unique<Buff>(enemy->getPosition(), type));
-			}
-		}
-	}
+	handleEnemyDeaths();
 
 	std::erase_if(entities, [this](const std::unique_ptr<Entity>& entity)
 		{
@@ -130,6 +115,30 @@ void PlayScene::resolveExplosions()
 		if (std::sqrt(delta.x * delta.x + delta.y * delta.y) <= bomber->getExplosionRadius())
 			player->TakeDammage(2);
 	}
+}
+
+void PlayScene::handleEnemyDeaths()
+{
+	std::vector<std::unique_ptr<Entity>> drops;
+
+	for (auto& entity : entities)
+	{
+		if (entity->getType() != EntityType::ENEMY || entity->isAlive())
+			continue;
+
+		Enemy* enemy = static_cast<Enemy*>(entity.get());
+		if (enemy->wasKilledByBullet())
+			score += 100;
+
+		if (dropChanceDist(rng) == 0)
+		{
+			BuffType type = static_cast<BuffType>(buffTypeDist(rng));
+			drops.push_back(std::make_unique<Buff>(enemy->getPosition(), type));
+		}
+	}
+
+	for (auto& drop : drops)
+		entities.push_back(std::move(drop));
 }
 
 void PlayScene::spawnEnemyBullets()

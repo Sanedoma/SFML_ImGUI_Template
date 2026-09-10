@@ -4,8 +4,6 @@
 #include <optional>
 
 #include <SFML/Window/Event.hpp>
-#include <vector>
-#include <random>
 
 #include "ImGui-SFML/imgui-SFML.h"
 

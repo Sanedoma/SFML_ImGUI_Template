@@ -1,5 +1,5 @@
 #pragma once
-#include "Gameplay/Enemy.h"
+#include "Gameplay/Enemy/Enemy.h"
 
 // Fonce vers le joueur, s'arrete a portee puis explose apres un court delai.
 class ExplosiveEnemy : public Enemy
