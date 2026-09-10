@@ -18,6 +18,7 @@ public:
 	void Render(sf::RenderWindow& window) override;
 
 private:
+	void spawnEnemyBullets();
 	void checkCollisions();
 
 	std::vector<std::unique_ptr<Entity>> entities;

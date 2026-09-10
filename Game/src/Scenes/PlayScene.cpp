@@ -10,7 +10,9 @@
 #include "Gameplay/Player.h"
 #include "Gameplay/Enemy.h"
 #include "Gameplay/BasicEnemy.h"
+#include "Gameplay/ShooterEnemy.h"
 #include "Gameplay/Bullet.h"
+#include "Gameplay/EnemyBullet.h"
 #include "Gameplay/Buff.h"
 #include "Scenes/GameOverScene.h"
 #include "Scenes/PauseScene.h"
@@ -26,8 +28,8 @@ PlayScene::PlayScene(Game& game)
 	// Quelques ennemis de test
 	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 100.f, 0.f }));
 	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 300.f, -100.f }));
-	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 500.f, -200.f }));
 	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 700.f, -50.f }));
+	entities.push_back(std::make_unique<ShooterEnemy>(sf::Vector2f{ 400.f, 60.f }));
 }
 
 void PlayScene::handleEvent(const sf::Event& event)
@@ -45,6 +47,8 @@ void PlayScene::Update(float deltaTime)
 	if(player)
 		if(auto bullet = player->TryShoot())
 			entities.push_back(std::move(bullet));
+
+	spawnEnemyBullets();
 
 	checkCollisions();
 
@@ -94,6 +98,27 @@ void PlayScene::Render(sf::RenderWindow& window)
 	if (ImGui::Button("Gagner"))
 		game.scenes().replace(std::make_unique<VictoryScene>(game, score));
 	ImGui::End();
+}
+
+void PlayScene::spawnEnemyBullets()
+{
+	std::vector<std::unique_ptr<Entity>> fired;
+
+	for (auto& entity : entities)
+	{
+		if (entity->getType() != EntityType::ENEMY)
+			continue;
+
+		Enemy* enemy = static_cast<Enemy*>(entity.get());
+		if (enemy->consumeShootRequest())
+		{
+			const sf::Vector2f from = enemy->getPosition();
+			fired.push_back(std::make_unique<EnemyBullet>(sf::Vector2f{ from.x + 16.f, from.y + 40.f }));
+		}
+	}
+
+	for (auto& bullet : fired)
+		entities.push_back(std::move(bullet));
 }
 
 void PlayScene::checkCollisions()
