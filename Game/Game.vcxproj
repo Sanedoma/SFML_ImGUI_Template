@@ -78,10 +78,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Gameplay\Buff.cpp" />
-    <ClCompile Include="src\Gameplay\Enemy.cpp" />
-    <ClCompile Include="src\Core\Entity.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Core\AssetManager.cpp" />
     <ClCompile Include="src\Core\Game.cpp" />
+    <ClCompile Include="src\Core\SceneManager.cpp" />
+    <ClCompile Include="src\Core\Entity.cpp" />
+    <ClCompile Include="src\Scenes\MenuScene.cpp" />
+    <ClCompile Include="src\Scenes\PlayScene.cpp" />
+    <ClCompile Include="src\Scenes\PauseScene.cpp" />
+    <ClCompile Include="src\Scenes\SettingsScene.cpp" />
+    <ClCompile Include="src\Scenes\GameOverScene.cpp" />
+    <ClCompile Include="src\Scenes\VictoryScene.cpp" />
     <ClCompile Include="src\Gameplay\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -90,9 +97,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Gameplay\Buff.h" />
-    <ClInclude Include="src\Gameplay\Enemy.h" />
+    <ClInclude Include="src\Core\AssetManager.h" />
+    <ClInclude Include="src\Core\Config.h" />
+    <ClInclude Include="src\Core\Game.h" />
+    <ClInclude Include="src\Core\Scene.h" />
+    <ClInclude Include="src\Core\SceneManager.h" />
     <ClInclude Include="src\Core\Entity.h" />
+    <ClInclude Include="src\Scenes\MenuScene.h" />
+    <ClInclude Include="src\Scenes\PlayScene.h" />
+    <ClInclude Include="src\Scenes\PauseScene.h" />
+    <ClInclude Include="src\Scenes\SettingsScene.h" />
+    <ClInclude Include="src\Scenes\GameOverScene.h" />
+    <ClInclude Include="src\Scenes\VictoryScene.h" />
     <ClInclude Include="src\Gameplay\Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
