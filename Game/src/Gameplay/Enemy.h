@@ -1,60 +1,36 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Core/Entity.h"
-#include "Core/Config.h"
 
+#include "Core/Entity.h"
+
+// Base commune aux ennemis. Update() reste a la charge des sous-classes,
+// qui definissent le comportement (deplacement, tir, explosion).
 class Enemy : public Entity
 {
-protected:
-	sf::RectangleShape fallback;
-	sf::Vector2f position;
-	float speed = 100.f;
-	bool killedByBullet = false;
-
 public:
-	Enemy(sf::Vector2f startPosition){
-		position = startPosition;
-		fallback.setSize({ 40.f, 40.f });
-		fallback.setFillColor(sf::Color::Red);
-		fallback.setPosition(position);
-	}
+	Enemy(sf::Vector2f position, float speed, int health);
 
-	void Update(float deltaTime)override {
-		position.y += speed * deltaTime;
-		fallback.setPosition(position);
+	void Render(sf::RenderWindow& window) override;
+	void OnCollision(Entity* other) override;
+	sf::FloatRect getBounds() const override;
+	EntityType getType() const override;
 
-		if (isOffScreen()) {
-			alive = false; // hors écran → disparaît
-		}
-	}
+	// Appele chaque frame par PlayScene. Vide par defaut.
+	virtual void ReactToPlayer(sf::Vector2f playerPosition, float deltaTime);
+	// L'ennemi veut tirer cette frame (ShooterEnemy uniquement).
+	virtual bool consumeShootRequest();
 
-	void Render(sf::RenderWindow& window) override {
-		window.draw(fallback);
-	}
+	void takeDamage(int damage);
+	void kill();
 
-	void OnCollision(Entity* other) override {
-		if (other->getType() == EntityType::BULLET ||
-			other->getType() == EntityType::PLAYER) {
-			alive = false;
-			killedByBullet = (other->getType() == EntityType::BULLET);
-		}
-	}
-
-	sf::FloatRect getBounds() const override{
-		return fallback.getGlobalBounds();
-	}
-
-	EntityType getType() const override
-	{
-		return EntityType::ENEMY;
-	}
-
-	sf::Vector2f getPosition() const { return position; }
-
-	bool isOffScreen() const {
-		sf::FloatRect bounds = fallback.getGlobalBounds();
-		return bounds.position.y + bounds.size.y > static_cast<float>(cfg::WindowHeight);
-	}
+	sf::Vector2f getPosition() const;
 	bool wasKilledByBullet() const { return killedByBullet; }
-};
 
+protected:
+	bool isOffScreen() const;
+
+	sf::RectangleShape shape;
+	float speed;
+	int health;
+	bool killedByBullet = false;
+};

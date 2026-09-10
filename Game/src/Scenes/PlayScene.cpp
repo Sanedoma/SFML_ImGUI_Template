@@ -9,6 +9,7 @@
 #include "Core/Game.h"
 #include "Gameplay/Player.h"
 #include "Gameplay/Enemy.h"
+#include "Gameplay/BasicEnemy.h"
 #include "Gameplay/Bullet.h"
 #include "Gameplay/Buff.h"
 #include "Scenes/GameOverScene.h"
@@ -22,11 +23,11 @@ PlayScene::PlayScene(Game& game)
 	player = newPlayer.get();
 	entities.push_back(std::move(newPlayer));
 
-	// Quelques ennemis de test (comme avant le merge)
-	entities.push_back(std::make_unique<Enemy>(sf::Vector2f{ 100.f, 0.f }));
-	entities.push_back(std::make_unique<Enemy>(sf::Vector2f{ 300.f, -100.f }));
-	entities.push_back(std::make_unique<Enemy>(sf::Vector2f{ 500.f, -200.f }));
-	entities.push_back(std::make_unique<Enemy>(sf::Vector2f{ 700.f, -50.f }));
+	// Quelques ennemis de test
+	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 100.f, 0.f }));
+	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 300.f, -100.f }));
+	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 500.f, -200.f }));
+	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 700.f, -50.f }));
 }
 
 void PlayScene::handleEvent(const sf::Event& event)
