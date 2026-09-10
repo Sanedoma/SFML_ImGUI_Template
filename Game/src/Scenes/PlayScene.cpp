@@ -1,5 +1,6 @@
 #include "Scenes/PlayScene.h"
 
+#include <cmath>
 #include <memory>
 #include <SFML/Window/Keyboard.hpp>
 
@@ -9,7 +10,11 @@
 #include "Core/Game.h"
 #include "Gameplay/Player.h"
 #include "Gameplay/Enemy.h"
+#include "Gameplay/BasicEnemy.h"
+#include "Gameplay/ShooterEnemy.h"
+#include "Gameplay/ExplosiveEnemy.h"
 #include "Gameplay/Bullet.h"
+#include "Gameplay/EnemyBullet.h"
 #include "Gameplay/Buff.h"
 #include "Scenes/GameOverScene.h"
 #include "Scenes/PauseScene.h"
@@ -22,11 +27,12 @@ PlayScene::PlayScene(Game& game)
 	player = newPlayer.get();
 	entities.push_back(std::move(newPlayer));
 
-	// Quelques ennemis de test (comme avant le merge)
-	entities.push_back(std::make_unique<Enemy>(sf::Vector2f{ 100.f, 0.f }));
-	entities.push_back(std::make_unique<Enemy>(sf::Vector2f{ 300.f, -100.f }));
-	entities.push_back(std::make_unique<Enemy>(sf::Vector2f{ 500.f, -200.f }));
-	entities.push_back(std::make_unique<Enemy>(sf::Vector2f{ 700.f, -50.f }));
+	// Quelques ennemis de test
+	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 100.f, 0.f }));
+	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 300.f, -100.f }));
+	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 700.f, -50.f }));
+	entities.push_back(std::make_unique<ShooterEnemy>(sf::Vector2f{ 400.f, 60.f }));
+	entities.push_back(std::make_unique<ExplosiveEnemy>(sf::Vector2f{ 200.f, -150.f }));
 }
 
 void PlayScene::handleEvent(const sf::Event& event)
@@ -41,9 +47,21 @@ void PlayScene::Update(float deltaTime)
 	for (auto& entity : entities)
 		entity->Update(deltaTime);
 
+	if (player)
+	{
+		const sf::Vector2f playerPos = player->getPosition();
+		for (auto& entity : entities)
+			if (entity->getType() == EntityType::ENEMY)
+				static_cast<Enemy*>(entity.get())->ReactToPlayer(playerPos, deltaTime);
+	}
+
+	resolveExplosions();
+
 	if(player)
 		if(auto bullet = player->TryShoot())
 			entities.push_back(std::move(bullet));
+
+	spawnEnemyBullets();
 
 	checkCollisions();
 
@@ -93,6 +111,46 @@ void PlayScene::Render(sf::RenderWindow& window)
 	if (ImGui::Button("Gagner"))
 		game.scenes().replace(std::make_unique<VictoryScene>(game, score));
 	ImGui::End();
+}
+
+void PlayScene::resolveExplosions()
+{
+	if (!player)
+		return;
+
+	const sf::Vector2f playerPos = player->getPosition();
+
+	for (auto& entity : entities)
+	{
+		auto* bomber = dynamic_cast<ExplosiveEnemy*>(entity.get());
+		if (!bomber || !bomber->hasExploded())
+			continue;
+
+		const sf::Vector2f delta = playerPos - bomber->getPosition();
+		if (std::sqrt(delta.x * delta.x + delta.y * delta.y) <= bomber->getExplosionRadius())
+			player->TakeDammage(2);
+	}
+}
+
+void PlayScene::spawnEnemyBullets()
+{
+	std::vector<std::unique_ptr<Entity>> fired;
+
+	for (auto& entity : entities)
+	{
+		if (entity->getType() != EntityType::ENEMY)
+			continue;
+
+		Enemy* enemy = static_cast<Enemy*>(entity.get());
+		if (enemy->consumeShootRequest())
+		{
+			const sf::Vector2f from = enemy->getPosition();
+			fired.push_back(std::make_unique<EnemyBullet>(sf::Vector2f{ from.x + 16.f, from.y + 40.f }));
+		}
+	}
+
+	for (auto& bullet : fired)
+		entities.push_back(std::move(bullet));
 }
 
 void PlayScene::checkCollisions()
