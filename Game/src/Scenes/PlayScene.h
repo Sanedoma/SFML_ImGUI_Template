@@ -18,6 +18,7 @@ public:
 	void Render(sf::RenderWindow& window) override;
 
 private:
+	void resolveExplosions();
 	void spawnEnemyBullets();
 	void checkCollisions();
 

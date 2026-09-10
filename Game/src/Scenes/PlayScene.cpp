@@ -1,5 +1,6 @@
 #include "Scenes/PlayScene.h"
 
+#include <cmath>
 #include <memory>
 #include <SFML/Window/Keyboard.hpp>
 
@@ -11,6 +12,7 @@
 #include "Gameplay/Enemy.h"
 #include "Gameplay/BasicEnemy.h"
 #include "Gameplay/ShooterEnemy.h"
+#include "Gameplay/ExplosiveEnemy.h"
 #include "Gameplay/Bullet.h"
 #include "Gameplay/EnemyBullet.h"
 #include "Gameplay/Buff.h"
@@ -30,6 +32,7 @@ PlayScene::PlayScene(Game& game)
 	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 300.f, -100.f }));
 	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 700.f, -50.f }));
 	entities.push_back(std::make_unique<ShooterEnemy>(sf::Vector2f{ 400.f, 60.f }));
+	entities.push_back(std::make_unique<ExplosiveEnemy>(sf::Vector2f{ 200.f, -150.f }));
 }
 
 void PlayScene::handleEvent(const sf::Event& event)
@@ -43,6 +46,16 @@ void PlayScene::Update(float deltaTime)
 {
 	for (auto& entity : entities)
 		entity->Update(deltaTime);
+
+	if (player)
+	{
+		const sf::Vector2f playerPos = player->getPosition();
+		for (auto& entity : entities)
+			if (entity->getType() == EntityType::ENEMY)
+				static_cast<Enemy*>(entity.get())->ReactToPlayer(playerPos, deltaTime);
+	}
+
+	resolveExplosions();
 
 	if(player)
 		if(auto bullet = player->TryShoot())
@@ -98,6 +111,25 @@ void PlayScene::Render(sf::RenderWindow& window)
 	if (ImGui::Button("Gagner"))
 		game.scenes().replace(std::make_unique<VictoryScene>(game, score));
 	ImGui::End();
+}
+
+void PlayScene::resolveExplosions()
+{
+	if (!player)
+		return;
+
+	const sf::Vector2f playerPos = player->getPosition();
+
+	for (auto& entity : entities)
+	{
+		auto* bomber = dynamic_cast<ExplosiveEnemy*>(entity.get());
+		if (!bomber || !bomber->hasExploded())
+			continue;
+
+		const sf::Vector2f delta = playerPos - bomber->getPosition();
+		if (std::sqrt(delta.x * delta.x + delta.y * delta.y) <= bomber->getExplosionRadius())
+			player->TakeDammage(2);
+	}
 }
 
 void PlayScene::spawnEnemyBullets()
