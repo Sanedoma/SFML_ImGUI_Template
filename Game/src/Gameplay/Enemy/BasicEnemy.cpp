@@ -1,7 +1,7 @@
 #include "Gameplay/Enemy/BasicEnemy.h"
 
 BasicEnemy::BasicEnemy(sf::Vector2f position)
-    : Enemy(position, 150.f, 20)
+    : Enemy(position, 150.f, 10)
 {
     shape.setFillColor(sf::Color::Red);
 

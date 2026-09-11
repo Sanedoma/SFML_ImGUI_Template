@@ -3,7 +3,7 @@
 #include <cmath>
 
 ExplosiveEnemy::ExplosiveEnemy(sf::Vector2f position)
-    : Enemy(position, 120.f, 10)
+    : Enemy(position, 120.f, 20)
 {
     setEnemyTexture("entities/explosive_enemy.png");
 
