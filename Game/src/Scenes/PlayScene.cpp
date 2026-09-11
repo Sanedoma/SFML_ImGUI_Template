@@ -70,6 +70,7 @@ void PlayScene::Update(float deltaTime)
 			entities.push_back(std::move(bullet));
 
 	spawnEnemyBullets();
+	spawnObstacles(deltaTime);
 
 	checkCollisions();
 
@@ -175,6 +176,19 @@ void PlayScene::spawnEnemyBullets()
 
 	for (auto& bullet : fired)
 		entities.push_back(std::move(bullet));
+}
+
+void PlayScene::spawnObstacles(float deltaTime)
+{
+	obstacleSpawnTimer -= deltaTime;
+	if (obstacleSpawnTimer > 0.f)
+		return;
+
+	obstacleSpawnTimer = obstacleIntervalDist(rng);
+
+	const auto size = static_cast<ObstacleSize>(obstacleSizeDist(rng));
+	const sf::Vector2f spawnPos{ obstacleXDist(rng), -60.f };
+	entities.push_back(std::make_unique<Obstacle>(spawnPos, size));
 }
 
 void PlayScene::checkCollisions()

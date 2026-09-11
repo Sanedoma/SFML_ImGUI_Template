@@ -3,6 +3,7 @@
 #include <vector>
 #include <random>
 
+#include "Core/Config.h"
 #include "Core/Scene.h"
 #include "World/Background.h"
 #include "World/Hud.h"
@@ -22,6 +23,7 @@ public:
 private:
 	void resolveExplosions();
 	void spawnEnemyBullets();
+	void spawnObstacles(float deltaTime);
 	void handleEnemyDeaths();
 	void checkCollisions();
 
@@ -34,4 +36,9 @@ private:
 	std::mt19937 rng{ std::random_device{}() };
 	std::uniform_int_distribution<int> buffTypeDist{ 0, 3 };
 	std::uniform_int_distribution<int> dropChanceDist{ 0, 4 };
+
+	float obstacleSpawnTimer = 1.f;
+	std::uniform_real_distribution<float> obstacleIntervalDist{ 1.5f, 3.f };
+	std::uniform_int_distribution<int> obstacleSizeDist{ 0, 2 };
+	std::uniform_real_distribution<float> obstacleXDist{ 20.f, static_cast<float>(cfg::WindowWidth) - 20.f };
 };
