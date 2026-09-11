@@ -15,7 +15,7 @@ class Player;
 class PlayScene : public Scene
 {
 public:
-	explicit PlayScene(Game& game, std::string levelPath = "levels/level1.txt");
+	explicit PlayScene(Game& game, std::string levelPath = "levels/Level1.txt");
 
 	void handleEvent(const sf::Event& event) override;
 	void Update(float deltaTime) override;
