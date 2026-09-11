@@ -16,6 +16,7 @@
 #include "Gameplay/Bullet.h"
 #include "Gameplay/Enemy/EnemyBullet.h"
 #include "Gameplay/Buff.h"
+#include "Gameplay/Obstacle.h"
 #include "Scenes/GameOverScene.h"
 #include "Scenes/PauseScene.h"
 #include "Scenes/VictoryScene.h"
@@ -33,6 +34,11 @@ PlayScene::PlayScene(Game& game)
 	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 700.f, -50.f }));
 	entities.push_back(std::make_unique<ShooterEnemy>(sf::Vector2f{ 400.f, 60.f }));
 	entities.push_back(std::make_unique<ExplosiveEnemy>(sf::Vector2f{ 200.f, -150.f }));
+
+	// Quelques obstacles de test (le spawn aleatoire arrive dans un prochain commit)
+	entities.push_back(std::make_unique<Obstacle>(sf::Vector2f{ 150.f, -300.f }, ObstacleSize::Big));
+	entities.push_back(std::make_unique<Obstacle>(sf::Vector2f{ 550.f, -400.f }, ObstacleSize::Medium));
+	entities.push_back(std::make_unique<Obstacle>(sf::Vector2f{ 650.f, -200.f }, ObstacleSize::Tiny));
 }
 
 void PlayScene::handleEvent(const sf::Event& event)

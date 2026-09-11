@@ -7,6 +7,7 @@
 #include "Gameplay/Buff.h"
 
 class Bullet;
+class Obstacle;
 
 class Player : public Entity
 {
