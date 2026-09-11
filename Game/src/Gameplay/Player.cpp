@@ -4,6 +4,7 @@
 
 #include "Core/Config.h"
 #include "Gameplay/Bullet.h"
+#include "Gameplay/Obstacle.h"
 
 Player::Player()
 {
@@ -117,6 +118,14 @@ void Player::OnCollision(Entity* other)
     {
         Buff* buff = static_cast<Buff*>(other);
         ApplyBuff(buff->getBuffType());
+    }
+    else if (other->getType() == EntityType::OBSTACLE)
+    {
+        // Les debris minuscules (0 degat) ne doivent pas gaspiller le
+        // bouclier ni declencher l'invulnerabilite.
+        Obstacle* obstacle = static_cast<Obstacle*>(other);
+        if (obstacle->getContactDamage() > 0)
+            TakeDammage(obstacle->getContactDamage());
     }
 }
 
