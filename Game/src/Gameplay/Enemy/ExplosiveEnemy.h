@@ -1,23 +1,43 @@
 #pragma once
+
 #include "Gameplay/Enemy/Enemy.h"
 
-// Fonce vers le joueur, s'arrete a portee puis explose apres un court delai.
 class ExplosiveEnemy : public Enemy
 {
 public:
-	explicit ExplosiveEnemy(sf::Vector2f position);
+    ExplosiveEnemy(sf::Vector2f position);
 
-	void Update(float deltaTime) override;
-	void ReactToPlayer(sf::Vector2f playerPosition, float deltaTime) override;
+    void Update(float deltaTime) override;
+    void Render(sf::RenderWindow& window) override;
 
-	bool hasExploded() const { return exploded; }
-	float getExplosionRadius() const { return explosionRadius; }
+    void ReactToPlayer(
+        sf::Vector2f playerPosition,
+        float deltaTime
+    ) override;
+
+    bool hasExploded() const { return exploded; }
+    float getExplosionRadius() const { return explosionRadius; }
 
 private:
-	float triggerDistance = 100.f;
-	float explosionRadius = 150.f;
-	float explosionDelay = 0.6f;
-	float explosionTimer = 0.f;
-	bool preparingExplosion = false;
-	bool exploded = false;
+    void rotateTowardPlayer(sf::Vector2f playerPosition);
+    void updateBlink(float deltaTime);
+
+    float triggerDistance = 70.f;
+    float explosionRadius = 75.f;
+
+    float explosionTimer = 0.f;
+    float explosionDelay = 0.8f;
+
+    bool preparingExplosion = false;
+    bool exploded = false;
+
+    float blinkTimer = 0.f;
+    float blinkInterval = 0.12f;
+    bool blinkVisible = true;
+
+    bool showingExplosion = false;
+    float explosionEffectTimer = 0.f;
+    float explosionEffectDuration = 0.25f;
+
+    sf::CircleShape explosionCircle;
 };
