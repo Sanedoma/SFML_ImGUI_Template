@@ -1,7 +1,8 @@
 #pragma once
 #include "Gameplay/Enemy/Enemy.h"
 
-// Stationnaire, tire vers le bas a intervalle regulier.
+// Descend jusqu'a une position de tir, puis reste immobile et tire vers
+// le bas a intervalle regulier.
 class ShooterEnemy : public Enemy
 {
 public:
@@ -11,6 +12,8 @@ public:
 	bool consumeShootRequest() override;
 
 private:
+	bool inPosition = false;
+
 	float shootTimer = 0.f;
 	float shootCooldown = 1.5f;
 	bool wantsToShoot = false;

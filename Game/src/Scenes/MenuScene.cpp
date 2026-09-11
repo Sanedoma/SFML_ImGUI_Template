@@ -5,6 +5,7 @@
 #include "ImGui/imgui.h"
 
 #include "Core/Game.h"
+#include "Scenes/LevelSelectScene.h"
 #include "Scenes/PlayScene.h"
 #include "Scenes/SettingsScene.h"
 
@@ -20,6 +21,9 @@ void MenuScene::Render(sf::RenderWindow& window)
 
 	if (ImGui::Button("Jouer", { 160.f, 0.f }))
 		game.scenes().replace(std::make_unique<PlayScene>(game));
+
+	if (ImGui::Button("Changer de niveau", { 160.f, 0.f }))
+		game.scenes().push(std::make_unique<LevelSelectScene>(game));
 
 	if (ImGui::Button("Options", { 160.f, 0.f }))
 		game.scenes().push(std::make_unique<SettingsScene>(game));

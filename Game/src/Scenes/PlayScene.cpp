@@ -1,44 +1,31 @@
 #include "Scenes/PlayScene.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <SFML/Window/Keyboard.hpp>
 
 #include "ImGui/imgui.h"
 
+#include "Core/Config.h"
 #include "Core/Entity.h"
 #include "Core/Game.h"
 #include "Gameplay/Player.h"
 #include "Gameplay/Enemy/Enemy.h"
-#include "Gameplay/Enemy/BasicEnemy.h"
-#include "Gameplay/Enemy/ShooterEnemy.h"
 #include "Gameplay/Enemy/ExplosiveEnemy.h"
 #include "Gameplay/Bullet.h"
 #include "Gameplay/Enemy/EnemyBullet.h"
 #include "Gameplay/Buff.h"
-#include "Gameplay/Obstacle.h"
 #include "Scenes/GameOverScene.h"
 #include "Scenes/PauseScene.h"
 #include "Scenes/VictoryScene.h"
 
-PlayScene::PlayScene(Game& game)
-	: Scene(game)
+PlayScene::PlayScene(Game& game, std::string levelPath)
+	: Scene(game), level(std::string(cfg::AssetsRoot) + levelPath)
 {
 	auto newPlayer = std::make_unique<Player>();
 	player = newPlayer.get();
 	entities.push_back(std::move(newPlayer));
-
-	// Quelques ennemis de test
-	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 100.f, 0.f }));
-	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 300.f, -100.f }));
-	entities.push_back(std::make_unique<BasicEnemy>(sf::Vector2f{ 700.f, -50.f }));
-	entities.push_back(std::make_unique<ShooterEnemy>(sf::Vector2f{ 400.f, 60.f }));
-	entities.push_back(std::make_unique<ExplosiveEnemy>(sf::Vector2f{ 200.f, -150.f }));
-
-	// Quelques obstacles de test (le spawn aleatoire arrive dans un prochain commit)
-	entities.push_back(std::make_unique<Obstacle>(sf::Vector2f{ 150.f, -300.f }, ObstacleSize::Big));
-	entities.push_back(std::make_unique<Obstacle>(sf::Vector2f{ 550.f, -400.f }, ObstacleSize::Medium));
-	entities.push_back(std::make_unique<Obstacle>(sf::Vector2f{ 650.f, -200.f }, ObstacleSize::Tiny));
 }
 
 void PlayScene::handleEvent(const sf::Event& event)
@@ -70,7 +57,7 @@ void PlayScene::Update(float deltaTime)
 			entities.push_back(std::move(bullet));
 
 	spawnEnemyBullets();
-	spawnObstacles(deltaTime);
+	spawnFromLevel(deltaTime);
 
 	checkCollisions();
 
@@ -87,8 +74,11 @@ void PlayScene::Update(float deltaTime)
 				player = nullptr;
 			return true;
 		});
-	if(!player)
+
+	if (!player)
 		game.scenes().replace(std::make_unique<GameOverScene>(game, score));
+	else if (level.isFinished() && !enemiesRemaining())
+		game.scenes().replace(std::make_unique<VictoryScene>(game, score));
 }
 
 void PlayScene::Render(sf::RenderWindow& window)
@@ -178,17 +168,17 @@ void PlayScene::spawnEnemyBullets()
 		entities.push_back(std::move(bullet));
 }
 
-void PlayScene::spawnObstacles(float deltaTime)
+void PlayScene::spawnFromLevel(float deltaTime)
 {
-	obstacleSpawnTimer -= deltaTime;
-	if (obstacleSpawnTimer > 0.f)
-		return;
+	auto spawned = level.Update(deltaTime);
+	for (auto& entity : spawned)
+		entities.push_back(std::move(entity));
+}
 
-	obstacleSpawnTimer = obstacleIntervalDist(rng);
-
-	const auto size = static_cast<ObstacleSize>(obstacleSizeDist(rng));
-	const sf::Vector2f spawnPos{ obstacleXDist(rng), -60.f };
-	entities.push_back(std::make_unique<Obstacle>(spawnPos, size));
+bool PlayScene::enemiesRemaining() const
+{
+	return std::any_of(entities.begin(), entities.end(),
+		[](const std::unique_ptr<Entity>& entity) { return entity->getType() == EntityType::ENEMY; });
 }
 
 void PlayScene::checkCollisions()

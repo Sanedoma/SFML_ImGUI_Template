@@ -1,12 +1,13 @@
 #pragma once
 #include <memory>
-#include <vector>
 #include <random>
+#include <string>
+#include <vector>
 
-#include "Core/Config.h"
 #include "Core/Scene.h"
 #include "World/Background.h"
 #include "World/Hud.h"
+#include "World/LevelLoader.h"
 
 class Entity;
 class Player;
@@ -14,7 +15,7 @@ class Player;
 class PlayScene : public Scene
 {
 public:
-	explicit PlayScene(Game& game);
+	explicit PlayScene(Game& game, std::string levelPath = "levels/Level1.txt");
 
 	void handleEvent(const sf::Event& event) override;
 	void Update(float deltaTime) override;
@@ -23,12 +24,14 @@ public:
 private:
 	void resolveExplosions();
 	void spawnEnemyBullets();
-	void spawnObstacles(float deltaTime);
+	void spawnFromLevel(float deltaTime);
 	void handleEnemyDeaths();
 	void checkCollisions();
+	bool enemiesRemaining() const;
 
 	Background background;
 	Hud hud;
+	LevelLoader level;
 	std::vector<std::unique_ptr<Entity>> entities;
 	Player* player = nullptr;
 	int score = 0;
@@ -36,9 +39,4 @@ private:
 	std::mt19937 rng{ std::random_device{}() };
 	std::uniform_int_distribution<int> buffTypeDist{ 0, 3 };
 	std::uniform_int_distribution<int> dropChanceDist{ 0, 4 };
-
-	float obstacleSpawnTimer = 1.f;
-	std::uniform_real_distribution<float> obstacleIntervalDist{ 1.5f, 3.f };
-	std::uniform_int_distribution<int> obstacleSizeDist{ 0, 2 };
-	std::uniform_real_distribution<float> obstacleXDist{ 20.f, static_cast<float>(cfg::WindowWidth) - 20.f };
 };
