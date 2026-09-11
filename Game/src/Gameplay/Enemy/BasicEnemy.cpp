@@ -1,15 +1,22 @@
 #include "Gameplay/Enemy/BasicEnemy.h"
 
 BasicEnemy::BasicEnemy(sf::Vector2f position)
-	: Enemy(position, 150.f, 20)
+    : Enemy(position, 150.f, 20)
 {
-	shape.setFillColor(sf::Color::Red);
+    shape.setFillColor(sf::Color::Red);
+
+    setEnemyTexture(
+        "entities/basic_enemy.png"
+    );
 }
 
 void BasicEnemy::Update(float deltaTime)
 {
-	shape.move({ 0.f, speed * deltaTime });
+    moveEnemy({
+        0.f,
+        speed * deltaTime
+        });
 
-	if (isOffScreen())
-		alive = false;
+    if (isOffScreen())
+        alive = false;
 }
