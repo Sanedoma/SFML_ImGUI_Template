@@ -568,6 +568,8 @@ FodyWeavers.xsd
 # Config file of ImGUI
 imgui.ini
 
-# Engine files
+# Vendored SFML (shipped with the template) - override the generic *.lib / *.pdb
+# rules above so the whole bundled lib/ folder stays versioned as-is.
 !include/
 !lib/
+!lib/**
